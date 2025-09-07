@@ -24,20 +24,22 @@ def épelle(épelleNiveau):
 			if réponseÉpelle==mot:jouer_son("divers/"+random.choice(["la_réponse_est_bonne","bonne_réponse","c'est_correct"])+".ogg") # Sur la vraie Dictée Magique, les messages sont dans un ordre qui se répète. À implémenter
 			else:
 				jouer_son("divers/c'est_inexact_essaie_encore_une_fois.ogg") # Incorrect, on laisse une seconde chance...
+				jouer_son(motEmlacement)
 				time.sleep(0.1)
 				réponseÉpelle=input().lower()
 				if réponseÉpelle==mot:jouer_son("divers/"+random.choice(["la_réponse_est_bonne","bonne_réponse","c'est_correct"])+".ogg") # Sur la vraie Dictée Magique, les messages sont dans un ordre qui se répète. À implémenter
 				else:
 					jouer_son("divers/c'est_inexact_la_bonne_ortographe_de.ogg")
-					time.sleep(0.3)
+					time.sleep(0.1)
 					jouer_son(motEmplacement)
-					time.sleep(0.3)
+					time.sleep(0.2)
 					jouer_son("divers/est.ogg")
 					time.sleep(0.5)
 					print(mot)
 					time.sleep(1)
 					jouer_son(motEmplacement)
 			if i!=nombreMots-1:jouer_son("divers/maintenant_épelle.ogg")
+			del épelleListe[épelleListe.index(mot)] # On supprime le mot du clone de la liste de mots, pour ne pas retomber dessus
 
 dictéeÉpelle=["A"]
 épelleA=["animal","bille","bol","camarade","canal","caramel","carnaval","carton","chaleur","chose","farine","feu","fille","fleur","fromage","marche","neveu","noir","parent","partir","potiron","poulet","premier","sardine","seul","sucre","tartine","tasse","tigre","trou","vendredi","ventre","vitrine"]
