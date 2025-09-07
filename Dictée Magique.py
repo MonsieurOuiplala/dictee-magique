@@ -24,7 +24,7 @@ def épelle(épelleNiveau):
 			if réponseÉpelle==mot:jouer_son("divers/"+random.choice(["la_réponse_est_bonne","bonne_réponse","c'est_correct"])+".ogg") # Sur la vraie Dictée Magique, les messages sont dans un ordre qui se répète. À implémenter
 			else:
 				jouer_son("divers/c'est_inexact_essaie_encore_une_fois.ogg") # Incorrect, on laisse une seconde chance...
-				jouer_son(motEmlacement)
+				jouer_son(motEmplacement)
 				time.sleep(0.1)
 				réponseÉpelle=input().lower()
 				if réponseÉpelle==mot:jouer_son("divers/"+random.choice(["la_réponse_est_bonne","bonne_réponse","c'est_correct"])+".ogg") # Sur la vraie Dictée Magique, les messages sont dans un ordre qui se répète. À implémenter
