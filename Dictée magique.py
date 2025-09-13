@@ -13,37 +13,40 @@ print("Bienvenue dans la Dictée magique ! Chargement...")
 def épelle(épelleNiveau):
 	épelleListe=eval("épelle"+épelleNiveau) # Charger la liste des mots
 	jouer_son("divers/épelle.ogg")
+	bonneRéponseRéponses=["bonne_réponse_maintenant_épelle","c'est_correct_épelle_ensuite","la_réponse_est_bonne_épelle","c'est_correct"]	
+	bonneRéponses=[0,1,2,1,0,1,2,1,0,3] # Dans l'ordre de lecture des bonnes réponses, bonneRéponseRéponses[i]
+	def bonneRéponse():
+		jouer_son("divers/"+bonneRéponseRéponses[bonneRéponses[0]]+".ogg")
+		del bonneRéponses[0]
 	nombreMots=10
 	for i in range(nombreMots): # Nombre de mots personnalisable
 			mot=random.choice(épelleListe) # Choisir le mot dans la liste clonée
-			motEmplacement="épelle-"+épelleNiveau+"/"+mot+".ogg" # Emplacement de l'enregistrement du mot
-			jouer_son(motEmplacement)
+			def jouer_mot():jouer_son("épelle-"+épelleNiveau+"/"+mot+".ogg") # Emplacement de l'enregistrement du mot
+			jouer_mot()
 			time.sleep(0.1)
-			# En attendant le système de frappe avec enregistrements
-			réponseÉpelle=input().lower()
-			if réponseÉpelle==mot:jouer_son("divers/"+random.choice(["la_réponse_est_bonne","bonne_réponse","c'est_correct_épelle_ensuite"])+".ogg")
-			else:
-				while True: # Sûrement la pire méthode, à changer !
-					if réponseÉpelle=="répéter":jouer_son(motEmplacement) # Ceci est à refaire en même temps que le système de frappe
-					else:
-						jouer_son("divers/c'est_inexact_essaie_encore_une_fois.ogg") # Incorrect, on laisse une seconde chance...
-						jouer_son(motEmplacement)
-						time.sleep(0.1)
-					réponseÉpelle=input().lower()
-					if réponseÉpelle==mot:
-						jouer_son("divers/"+random.choice(["la_réponse_est_bonne","c'est_correct_épelle_ensuite","bonne_réponse"])+".ogg")
-						break
-					elif réponseÉpelle!="répéter":
-						jouer_son("divers/c'est_inexact_la_bonne_ortographe_de.ogg")
-						time.sleep(0.1)
-						jouer_son(motEmplacement)
+			essai=0
+			while True:
+				réponseÉpelle=input().lower()
+				if réponseÉpelle=="répèter":jouer_mot()
+				elif réponseÉpelle!=mot:
+					if essai==0: # On a le droit a un second essai, bien sûr !
+						jouer_son("divers/c'est_inexact_essaie_encore_une_fois.ogg")
 						time.sleep(0.2)
+						jouer_mot()
+						essai+=1
+					else:
+						jouer_son("divers/c'est_inexact_la_bonne_ortographe_de.ogg")
+						jouer_mot()
 						jouer_son("divers/est.ogg")
-						time.sleep(0.5)
 						print(mot)
 						time.sleep(1)
-						jouer_son(motEmplacement)
+						jouer_mot()
+						time.sleep(0.1)
+						jouer_son("divers/épelle.ogg")
 						break
+				else:
+					bonneRéponse()
+					break
 			del épelleListe[épelleListe.index(mot)] # On supprime le mot du clone de la liste de mots, pour ne pas retomber dessus
 	jouer_son("divers/fin.ogg")
 
@@ -53,10 +56,10 @@ dictéeÉpelle=["A","B"]
 print("Terminé !")
 time.sleep(1)
 while True:
-	print("\n"*5)
+	print("\n"*4)
 	demandeModeDeJeu=input("1 - Épelle\nfin - Éteindre la Dictée magique\n")
 	if demandeModeDeJeu=="1":
-			print("\n"*2)
-			for i in dictéeÉpelle:print("\nÉpelle "+i[0])
+			print("\n"*4)
+			for i in dictéeÉpelle:print("Épelle "+i[0])
 			épelle(input(""))
 	if demandeModeDeJeu=="fin":break
