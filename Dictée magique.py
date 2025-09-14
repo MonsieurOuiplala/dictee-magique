@@ -1,14 +1,49 @@
 import pygame # Pour jouer les sons
 import random
 import time
+import sys, tty, termios # Pour le clavier
 pygame.mixer.init()
 def jouer_son(fichier):
 	pygame.mixer.music.load(fichier)
 	pygame.mixer.music.play()
 	while pygame.mixer.music.get_busy():pass # Attendre jusqu'à la fin de la lecture
+def jouer_lettre(lettre):jouer_son("alphabet/"+lettre+".ogg") # Joue par exemple alphabet/a.ogg
+def épelle_input():
+	fd=sys.stdin.fileno()
+	ancien=termios.tcgetattr(fd)
+	try:
+		tty.setraw(fd)
+		touche=sys.stdin.read(1)  # Lit une seule touche
+	finally:termios.tcsetattr(fd,termios.TCSADRAIN,ancien)
+	return touche
+
+def épeller_mot(épellerMot,afficher=True):
+	épellerMot=list(épellerMot)
+	for lettre in épellerMot:
+		if afficher:print(lettre,end="",flush=True)
+		jouer_lettre(lettre)
+		time.sleep(0.06)
 
 jouer_son("divers/allumage"+str(random.randrange(1,4))+".ogg")
 print("Bienvenue dans la Dictée magique ! Chargement...")
+
+def épelle_clavier(épelleNiveau,motÉpelle):
+	mot=""
+	print()
+	while True:
+		caractère=épelle_input()
+		if caractère=='"':jouer_son("épelle-"+épelleNiveau+"/"+motÉpelle+".ogg") # Touche pour répéter le mot
+		elif caractère=="'":
+			print("") # Touche pour recommencer
+			mot=""
+		elif caractère in ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]:
+			mot+=caractère
+			jouer_lettre(caractère)
+			print(caractère,end="",flush=True)
+		elif caractère==" ": # caractère ne porte pas très bien son nom...
+			return mot
+			break
+	
 
 def épelle(épelleNiveau):
 	épelleListe=eval("épelle"+épelleNiveau) # Charger la liste des mots
@@ -26,9 +61,8 @@ def épelle(épelleNiveau):
 			time.sleep(0.1)
 			essai=0
 			while True:
-				réponseÉpelle=input().lower()
-				if réponseÉpelle=="répèter":jouer_mot()
-				elif réponseÉpelle!=mot:
+				réponseÉpelle=épelle_clavier(épelleNiveau,mot)
+				if réponseÉpelle!=mot:
 					if essai==0: # On a le droit a un second essai, bien sûr !
 						jouer_son("divers/c'est_inexact_essaie_encore_une_fois.ogg")
 						time.sleep(0.2)
@@ -38,7 +72,8 @@ def épelle(épelleNiveau):
 						jouer_son("divers/c'est_inexact_la_bonne_ortographe_de.ogg")
 						jouer_mot()
 						jouer_son("divers/est.ogg")
-						print(mot)
+						print("")
+						épeller_mot(mot)
 						time.sleep(1)
 						jouer_mot()
 						time.sleep(0.1)
